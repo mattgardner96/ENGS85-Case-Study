@@ -1,0 +1,150 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ENGS 85.07: Practical EV Engineering</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-27"><meta name="DC.source" content="Case_Study.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>ENGS 85.07: Practical EV Engineering</h1><!--introduction--><p><b>Electric Go-Kart Design Case Study</b></p><p>Matt Gardner &amp; Peter Mahoney</p><p>5/30/18</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Motor Choice (Assessing Demands)</a></li><li><a href="#3">Road Load Requirements</a></li></ul></div><h2 id="1">Motor Choice (Assessing Demands)</h2><p>For our motor selection, we first calculated the gear ratio needed using this equation: <img src="Case_Study_eq06123214620547012730.png" alt="$ratio = v_m * r_w * \frac{\frac{60*2\pi}{63360}}{25mph}$" style="width:108px;height:19px;"></p><p>We selected the <b>larger motor</b> to fulfill our requirements with a <b>gear ratio of 1:7.14</b>. This ratio can be acheived with a 7-tooth sprocket and a 50-tooth sprocket.</p><pre class="codeinput">clear <span class="string">all</span>;
+
+max_motor_speed = 3000; <span class="comment">%RPM</span>
+
+wheel_radius = 10; <span class="comment">% 5" wheel radius and tires estimated to be 5" sidewall</span>
+
+max_ground_speed = 25; <span class="comment">%mph</span>
+
+gear_ratio = max_motor_speed * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed <span class="comment">%#ok&lt;NOPTS&gt;</span>
+</pre><pre class="codeoutput">
+gear_ratio =
+
+    7.1400
+
+</pre><p>Next, we calculated k &amp; R for our chosen motor using given motor parameter graphs.</p><p>Torque constant: <img src="Case_Study_eq16073810422237264016.png" alt="$k_m = \frac{\tau}{i}$" style="width:33px;height:12px;">; Winding resistance: <img src="Case_Study_eq17887905695033678130.png" alt="$R_m = \frac{V-k \Delta \omega}{\Delta i}$" style="width:60px;height:15px;"></p><pre class="codeinput">torque_max = 4.05; <span class="comment">% N-m</span>
+torque_min = 0;
+current_max = 33.6; <span class="comment">% A</span>
+current_min = 1.6;
+RPM_max = 3700; <span class="comment">%RPM</span>
+RPM_min = 2880;
+k_motor = (4.05 - 0) / (33.6-1.6) <span class="comment">%#ok</span>
+
+v_motor = 48; <span class="comment">% V</span>
+R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  <span class="comment">%#ok</span>
+</pre><pre class="codeoutput">
+k_motor =
+
+    0.1266
+
+
+R_motor =
+
+    1.8396
+
+</pre><h2 id="3">Road Load Requirements</h2><p>Road load for a constant speed of 15</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% ENGS 85.07: Practical EV Engineering
+% *Electric Go-Kart Design Case Study*
+% 
+% Matt Gardner & Peter Mahoney
+% 
+% 5/30/18
+
+%% Motor Choice (Assessing Demands)
+% For our motor selection, we first calculated the gear ratio needed using
+% this equation: $ratio = v_m * r_w * \frac{\frac{60*2\pi}{63360}}{25mph}$
+% 
+% We selected the *larger motor* to fulfill our requirements with a *gear
+% ratio of 1:7.14*. This ratio can be acheived with a 7-tooth sprocket and
+% a 50-tooth sprocket.
+
+clear all;
+
+max_motor_speed = 3000; %RPM
+
+wheel_radius = 10; % 5" wheel radius and tires estimated to be 5" sidewall
+
+max_ground_speed = 25; %mph
+
+gear_ratio = max_motor_speed * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed %#ok<NOPTS>
+%% 
+% Next, we calculated k & R for our chosen motor using given motor
+% parameter graphs.
+% 
+% Torque constant: $k_m = \frac{\tau}{i}$; Winding resistance: $R_m = \frac{V-k \Delta \omega}{\Delta i}$
+
+torque_max = 4.05; % N-m
+torque_min = 0;
+current_max = 33.6; % A
+current_min = 1.6;
+RPM_max = 3700; %RPM
+RPM_min = 2880;
+k_motor = (4.05 - 0) / (33.6-1.6) %#ok
+
+v_motor = 48; % V
+R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  %#ok
+
+%% Road Load Requirements
+% Road load for a constant speed of 15
+% 
+##### SOURCE END #####
+--></body></html>

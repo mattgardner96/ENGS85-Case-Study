@@ -44,14 +44,14 @@ R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-cur
 % grades. Power requirements can be summarized using the following
 % equation: $F = F_{rolling} + R_{drive} v + F_{drag}$
 
-weight_curb = 59 + 5.25 + 1.13 + 30*0.750+5 + 10; % kg; rolling chassis + motor + motor controller + batteries + driveline
-weight_driver = 100; % kg
+mass_curb = 59 + 5.25 + 1.13 + 30*0.750+5 + 10; % kg; rolling chassis + motor + motor controller + batteries + driveline
+mass_driver = 100; % kg
 C_rr = 0.02;
-F_roll = (weight_curb+weight_driver) * 9.81 * C_rr; % N
+F_roll = (mass_curb+mass_driver) * 9.81 * C_rr; % N
 
 C_d = 0.5;
 A_front = 0.5; % m^2
-F_drag = 1/2 * 1.225 * C_d * A_front * (max_ground_speed * 0.44704)^2; % N
+F_drag = 1/2 * 1.225 * C_d * A_front * (max_ground_speed * 0.44704)^2; % N 0.44704 factor converts mph to m/s
 
 F_driveline = 0.709 * max_ground_speed*0.44704; % N
 
@@ -73,7 +73,10 @@ Cap_battery*3 %#ok
 
 power_max = torque_max * 2*pi/60 * RPM_min;
 
-power_constant_speed = F_road * 10 * 0.0254 / gear_ratio * (2*pi/60) * RPM_max
+power_constant_speed = F_road * 10 * 0.0254 / gear_ratio * (2*pi/60) * RPM_max;
+
+% Accelerations & Constant Speed
+energy_reqd = (power_max * 2 * 6 + power_constant_speed * 60) * 20 * 0.0002777777778 %#ok
 
 %Accelerations
 power_reqd = power_max * 2 * 6 * 20 * 0.0002777777778;

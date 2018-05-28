@@ -81,9 +81,9 @@ power_reqd = power_max * 2 * 6 * 20 * 0.0002777777778;
 %Maximum Speed on 5 percent grade
 
 grade_load = sin(atan(0.05))*9.8*(weight_curb + weight_driver)
-b = 0.709
-a =1/2 * 1.225 * C_d * A_front
+b = 0.709*0.44704;
+a =1/2 * 1.225 * C_d * A_front *0.44704)^2
 c = F_roll + grade_load
-Speed_max = power_max/(c+a*speed_max+b*speed_max^2);
+Speed_max = power_max/load_total;
 
 

@@ -100,7 +100,7 @@ R_motor =
 
     1.8396
 
-</pre><h2 id="3">Road Load Requirements</h2><p>Road load for a constant speed of 15</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><h2 id="3">Road Load Requirements</h2><p>Road load can be calculated by summing rolling resistance, drag, and driveline losses accounting for defined speed requirements at certain grades. Power requirements can be summarized using the following equation: <img src="Case_Study_eq01595141453506525068.png" alt="$F = R_{roll} + R_{drive} v + C_d v^2$" style="width:126px;height:11px;"></p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% ENGS 85.07: Practical EV Engineering
 % *Electric Go-Kart Design Case Study*
@@ -144,7 +144,17 @@ v_motor = 48; % V
 R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  %#ok
 
 %% Road Load Requirements
-% Road load for a constant speed of 15
-% 
+% Road load can be calculated by summing rolling resistance, drag, and
+% driveline losses accounting for defined speed requirements at certain
+% grades. Power requirements can be summarized using the following
+% equation: $F = R_{roll} + R_{drive} v + C_d v^2$
+
+
+
+
+
+
+
+
 ##### SOURCE END #####
 --></body></html>

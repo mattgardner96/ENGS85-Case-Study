@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ENGS 85.07: Practical EV Engineering</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-27"><meta name="DC.source" content="Case_Study.m"><style type="text/css">
+      --><title>ENGS 85.07: Practical EV Engineering</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-29"><meta name="DC.source" content="Case_Study.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,41 +66,106 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>ENGS 85.07: Practical EV Engineering</h1><!--introduction--><p><b>Electric Go-Kart Design Case Study</b></p><p>Matt Gardner &amp; Peter Mahoney</p><p>5/30/18</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Motor Choice (Assessing Demands)</a></li><li><a href="#3">Road Load Requirements</a></li></ul></div><h2 id="1">Motor Choice (Assessing Demands)</h2><p>For our motor selection, we first calculated the gear ratio needed using this equation: <img src="Case_Study_eq06123214620547012730.png" alt="$ratio = v_m * r_w * \frac{\frac{60*2\pi}{63360}}{25mph}$" style="width:108px;height:19px;"></p><p>We selected the <b>larger motor</b> to fulfill our requirements with a <b>gear ratio of 1:7.14</b>. This ratio can be acheived with a 7-tooth sprocket and a 50-tooth sprocket.</p><pre class="codeinput">clear <span class="string">all</span>;
+  </style></head><body><div class="content"><h1>ENGS 85.07: Practical EV Engineering</h1><!--introduction--><p><b>Electric Go-Kart Design Case Study</b></p><p>Matt Gardner &amp; Peter Mahoney</p><p>5/30/18</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Motor Choice (Assessing Demands)</a></li><li><a href="#3">Road Load Requirements</a></li><li><a href="#4">Battery Sizing Requirement</a></li></ul></div><h2 id="1">Motor Choice (Assessing Demands)</h2><p>For our motor selection, we first calculated the gear ratio needed using this equation: <img src="Case_Study_eq06123214620547012730.png" alt="$ratio = v_m * r_w * \frac{\frac{60*2\pi}{63360}}{25mph}$" style="width:108px;height:19px;"></p><p>We selected the <b>larger motor</b> to fulfill our requirements with a <b>gear ratio of 1:7.14</b>.</p><pre class="codeinput">clear <span class="string">all</span>;
 
-max_motor_speed = 3000; <span class="comment">%RPM</span>
+max_rated_RPM = 3000; <span class="comment">%RPM</span>
 
-wheel_radius = 10; <span class="comment">% 5" wheel radius and tires estimated to be 5" sidewall</span>
+wheel_radius = 8; <span class="comment">% 5" wheel radius and tires estimated to be 3" sidewall</span>
 
 max_ground_speed = 25; <span class="comment">%mph</span>
 
-gear_ratio = max_motor_speed * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed <span class="comment">%#ok&lt;NOPTS&gt;</span>
+gear_ratio = max_rated_RPM * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed <span class="comment">%#ok&lt;NOPTS&gt;</span>
 </pre><pre class="codeoutput">
 gear_ratio =
 
-    7.1400
+        5.712
 
 </pre><p>Next, we calculated k &amp; R for our chosen motor using given motor parameter graphs.</p><p>Torque constant: <img src="Case_Study_eq16073810422237264016.png" alt="$k_m = \frac{\tau}{i}$" style="width:33px;height:12px;">; Winding resistance: <img src="Case_Study_eq17887905695033678130.png" alt="$R_m = \frac{V-k \Delta \omega}{\Delta i}$" style="width:60px;height:15px;"></p><pre class="codeinput">torque_max = 4.05; <span class="comment">% N-m</span>
 torque_min = 0;
 current_max = 33.6; <span class="comment">% A</span>
 current_min = 1.6;
 RPM_max = 3700; <span class="comment">%RPM</span>
-RPM_min = 2880;
-k_motor = (4.05 - 0) / (33.6-1.6) <span class="comment">%#ok</span>
+RPM_min = 2873;
+k_motor = (torque_max - torque_min) / (current_max-current_min) <span class="comment">%#ok</span>
 
 v_motor = 48; <span class="comment">% V</span>
 R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  <span class="comment">%#ok</span>
 </pre><pre class="codeoutput">
 k_motor =
 
-    0.1266
+      0.12656
 
 
 R_motor =
 
-    1.8396
+       1.8425
 
-</pre><h2 id="3">Road Load Requirements</h2><p>Road load can be calculated by summing rolling resistance, drag, and driveline losses accounting for defined speed requirements at certain grades. Power requirements can be summarized using the following equation: <img src="Case_Study_eq01595141453506525068.png" alt="$F = R_{roll} + R_{drive} v + C_d v^2$" style="width:126px;height:11px;"></p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><h2 id="3">Road Load Requirements</h2><p>Road load can be calculated by summing rolling resistance, drag, and driveline losses accounting for defined speed requirements at certain grades. Power requirements can be summarized using the following equation: <img src="Case_Study_eq15343183953555536633.png" alt="$F = F_{rolling} + R_{drive} v + F_{drag}$" style="width:136px;height:11px;"></p><pre class="codeinput">mass_curb = 59 + 5.25 + 1.13 + 30*0.750+5 + 10; <span class="comment">% kg; rolling chassis + motor + motor controller + batteries + driveline</span>
+mass_driver = 100; <span class="comment">% kg</span>
+C_rr = 0.02;
+F_roll = (mass_curb+mass_driver) * 9.81 * C_rr; <span class="comment">% N</span>
+
+C_d = 0.5;
+A_front = 0.5; <span class="comment">% m^2</span>
+F_drag = 1/2 * 1.225 * C_d * A_front * (max_ground_speed * 0.44704)^2; <span class="comment">% N 0.44704 factor converts mph to m/s</span>
+
+F_driveline = 0.709 * max_ground_speed*0.44704; <span class="comment">% N</span>
+
+F_road = F_roll + F_drag + F_driveline <span class="comment">%#ok</span>
+
+Cap_battery = F_road * max_ground_speed * 0.44704 * 3600 * 0.000277778; <span class="comment">% Wh</span>
+
+<span class="comment">%Factor of safety for battery:</span>
+Cap_battery_FOS=Cap_battery*3 <span class="comment">%#ok</span>
+</pre><pre class="codeoutput">
+F_road =
+
+       66.855
+
+
+Cap_battery_FOS =
+
+       2241.5
+
+</pre><h2 id="4">Battery Sizing Requirement</h2><p>~2.2 kWh energy requirement; 48V = 3.2V/cell * 15 cells/string; charge requirement: ~45 Ah; Use 2 strings of 15 cells each to gain 40Ah (30 cells total)</p><p>Does battery fulfill course requirements (6 2-second accelerations for 20 laps with constant 25mph speed otherwise, 1 min/lap)</p><pre class="codeinput">power_max = torque_max * 2*pi/60 * RPM_min;
+
+power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max <span class="comment">%#ok</span>
+
+<span class="comment">% Accelerations &amp; Constant Speed</span>
+energy_reqd = (power_max * 2 * 6 + power_constant_speed * 60) * 20 * 0.0002777777778 <span class="comment">%#ok</span>
+</pre><pre class="codeoutput">
+power_constant_speed =
+
+       921.51
+
+
+energy_reqd =
+
+        388.4
+
+</pre><p>Average power demand is calculated based on a constant 25 mph speed, though the "energy_reqd" variable is based on the course requirements (including the 2-sec accelerations). Current draw is calculated using the equation <img src="Case_Study_eq11936313852458519849.png" alt="$\tau = ki$" style="width:30px;height:8px;">.</p><pre class="codeinput">power_constant_speed <span class="comment">%#ok</span>
+
+current_draw_constant = F_road * wheel_radius * 0.0254 / gear_ratio / k_motor <span class="comment">%#ok</span>
+
+<span class="comment">%Maximum Speed on 5 percent grade</span>
+
+grade_load = sin(atan(0.05))*9.81*(mass_curb + mass_driver); <span class="comment">% N</span>
+grade_speed_no_drag = (v_motor - ((F_roll+grade_load)*wheel_radius*0.0254/gear_ratio)/k_motor*R_motor)/k_motor; <span class="comment">% rad/s</span>
+<span class="comment">% b = 0.709;</span>
+<span class="comment">% a =1/2 * 1.225 * C_d * A_front;</span>
+<span class="comment">% c = F_roll + grade_load;</span>
+<span class="comment">% Speed_max = power_max/(c+a*speed_max+b*speed_max^2);</span>
+</pre><pre class="codeoutput">
+power_constant_speed =
+
+       921.51
+
+
+current_draw_constant =
+
+       18.792
+
+</pre><p>By solving the cubic equation <img src="Case_Study_eq15674305631145146478.png" alt="$P = Fv = (av^2 + bv + c)v$" style="width:124px;height:12px;">, we were able to calculate a max speed of 15.7 mph at a 5% grade.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% ENGS 85.07: Practical EV Engineering
 % *Electric Go-Kart Design Case Study*
@@ -114,18 +179,17 @@ R_motor =
 % this equation: $ratio = v_m * r_w * \frac{\frac{60*2\pi}{63360}}{25mph}$
 % 
 % We selected the *larger motor* to fulfill our requirements with a *gear
-% ratio of 1:7.14*. This ratio can be acheived with a 7-tooth sprocket and
-% a 50-tooth sprocket.
+% ratio of 1:7.14*.
 
 clear all;
 
-max_motor_speed = 3000; %RPM
+max_rated_RPM = 3000; %RPM
 
-wheel_radius = 10; % 5" wheel radius and tires estimated to be 5" sidewall
+wheel_radius = 8; % 5" wheel radius and tires estimated to be 3" sidewall
 
 max_ground_speed = 25; %mph
 
-gear_ratio = max_motor_speed * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed %#ok<NOPTS>
+gear_ratio = max_rated_RPM * wheel_radius * 2*pi * 60 * (1/(5280*12)) / max_ground_speed %#ok<NOPTS>
 %% 
 % Next, we calculated k & R for our chosen motor using given motor
 % parameter graphs.
@@ -137,8 +201,8 @@ torque_min = 0;
 current_max = 33.6; % A
 current_min = 1.6;
 RPM_max = 3700; %RPM
-RPM_min = 2880;
-k_motor = (4.05 - 0) / (33.6-1.6) %#ok
+RPM_min = 2873;
+k_motor = (torque_max - torque_min) / (current_max-current_min) %#ok
 
 v_motor = 48; % V
 R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  %#ok
@@ -147,13 +211,64 @@ R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-cur
 % Road load can be calculated by summing rolling resistance, drag, and
 % driveline losses accounting for defined speed requirements at certain
 % grades. Power requirements can be summarized using the following
-% equation: $F = R_{roll} + R_{drive} v + C_d v^2$
+% equation: $F = F_{rolling} + R_{drive} v + F_{drag}$
 
+mass_curb = 59 + 5.25 + 1.13 + 30*0.750+5 + 10; % kg; rolling chassis + motor + motor controller + batteries + driveline
+mass_driver = 100; % kg
+C_rr = 0.02;
+F_roll = (mass_curb+mass_driver) * 9.81 * C_rr; % N
 
+C_d = 0.5;
+A_front = 0.5; % m^2
+F_drag = 1/2 * 1.225 * C_d * A_front * (max_ground_speed * 0.44704)^2; % N 0.44704 factor converts mph to m/s
 
+F_driveline = 0.709 * max_ground_speed*0.44704; % N
 
+F_road = F_roll + F_drag + F_driveline %#ok
 
+Cap_battery = F_road * max_ground_speed * 0.44704 * 3600 * 0.000277778; % Wh
 
+%Factor of safety for battery:
+Cap_battery_FOS=Cap_battery*3 %#ok
+
+%% Battery Sizing Requirement
+% ~2.2 kWh energy requirement; 
+% 48V = 3.2V/cell * 15 cells/string; 
+% charge requirement: ~45 Ah; Use 2 strings of 15 cells each to gain 40Ah (30 cells
+% total)
+% 
+% Does battery fulfill course requirements (6 2-second accelerations for 20
+% laps with constant 25mph speed otherwise, 1 min/lap)
+
+power_max = torque_max * 2*pi/60 * RPM_min;
+
+power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max %#ok
+
+% Accelerations & Constant Speed
+energy_reqd = (power_max * 2 * 6 + power_constant_speed * 60) * 20 * 0.0002777777778 %#ok
+
+%%
+% Average power demand is calculated based on a constant 25 mph speed,
+% though the "energy_reqd" variable is based on the course requirements
+% (including the 2-sec accelerations). Current draw is calculated using the
+% equation $\tau = ki$.
+
+power_constant_speed %#ok
+
+current_draw_constant = F_road * wheel_radius * 0.0254 / gear_ratio / k_motor %#ok
+
+%Maximum Speed on 5 percent grade
+
+grade_load = sin(atan(0.05))*9.81*(mass_curb + mass_driver); % N
+grade_speed_no_drag = (v_motor - ((F_roll+grade_load)*wheel_radius*0.0254/gear_ratio)/k_motor*R_motor)/k_motor; % rad/s
+% b = 0.709;
+% a =1/2 * 1.225 * C_d * A_front;
+% c = F_roll + grade_load;
+% Speed_max = power_max/(c+a*speed_max+b*speed_max^2);
+
+%% 
+% By solving the cubic equation $P = Fv = (av^2 + bv + c)v$, we were able
+% to calculate a max speed of 15.7 mph at a 5% grade.
 
 
 ##### SOURCE END #####

@@ -16,7 +16,7 @@ clear all;
 
 max_motor_speed = 3000; %RPM
 
-wheel_radius = 10; % 5" wheel radius and tires estimated to be 5" sidewall
+wheel_radius = 8; % 5" wheel radius and tires estimated to be 3" sidewall
 
 max_ground_speed = 25; %mph
 
@@ -31,9 +31,9 @@ torque_max = 4.05; % N-m
 torque_min = 0;
 current_max = 33.6; % A
 current_min = 1.6;
-RPM_max = 3700; %RPM
-RPM_min = 2880;
-k_motor = (4.05 - 0) / (33.6-1.6) %#ok
+RPM_max = 3000; %RPM
+RPM_min = 2873;
+k_motor = (torque_max - torque_min) / (current_max-current_min) %#ok
 
 v_motor = 48; % V
 R_motor = (v_motor - k_motor * (RPM_min-RPM_max) * (2*pi/60)) / (current_max-current_min)  %#ok
@@ -60,7 +60,7 @@ F_road = F_roll + F_drag + F_driveline %#ok
 Cap_battery = F_road * max_ground_speed * 0.44704 * 3600 * 0.000277778; % Wh
 
 %Factor of safety for battery:
-Cap_battery*3 %#ok
+Cap_battery_FOS=Cap_battery*3 %#ok
 
 %% Battery Sizing Requirement
 % ~2.2 kWh energy requirement; 
@@ -83,10 +83,11 @@ power_reqd = power_max * 2 * 6 * 20 * 0.0002777777778;
 
 %Maximum Speed on 5 percent grade
 
-grade_load = sin(atan(0.05))*9.81*(mass_curb + mass_driver);
-b = 0.709;
-a =1/2 * 1.225 * C_d * A_front;b
-c = F_roll + grade_load;
-Speed_max = power_max/(c+a*speed_max+b*speed_max^2);
-
-
+grade_load = sin(atan(0.05))*9.81*(mass_curb + mass_driver); % N
+grade_speed_no_drag = (v_motor - ((F_roll+grade_load)*wheel_radius*0.0254/gear_ratio)/k_motor*R_motor)/k_motor; % rad/s
+% b = 0.709;
+% a =1/2 * 1.225 * C_d * A_front;
+% c = F_roll + grade_load;
+% Speed_max = power_max/(c+a*speed_max+b*speed_max^2);
+% 
+% 

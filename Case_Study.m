@@ -100,6 +100,6 @@ grade_speed_no_drag = (v_motor - ((F_roll+grade_load)*wheel_radius*0.0254/gear_r
 %% 
 % By solving the cubic equation $P = Fv = (av^2 + bv + c)v$, we were able
 % to calculate a *max speed of 15.7 mph at a 5% grade*. *Power demand* on the
-% hill would be the full power of the motor in the short term, *1218.81W*.
+% hill would be *1218.81W,* the full power of the motor in the short term.
 % *Current draw would be 33.6A* at this power draw.
 

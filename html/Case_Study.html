@@ -127,18 +127,13 @@ Cap_battery_FOS =
 
        2241.5
 
-</pre><h2 id="4">Battery Sizing Requirement</h2><p>~2.2 kWh energy requirement; 48V = 3.2V/cell * 15 cells/string; charge requirement: ~45 Ah; Use 2 strings of 15 cells each to gain 40Ah (30 cells total)</p><p>Does battery fulfill course requirements (6 2-second accelerations for 20 laps with constant 25mph speed otherwise, 1 min/lap)</p><pre class="codeinput">power_max = torque_max * 2*pi/60 * RPM_min;
+</pre><h2 id="4">Battery Sizing Requirement</h2><p>~2.2 kWh energy requirement; 48V = 3.2V/cell * 15 cells/string; charge requirement: ~45 Ah; Use 2 strings of 15 cells each to gain 40Ah (30 cells total)</p><p>Does battery fulfill course requirements (6 2-second accelerations for 20 laps with constant 25mph speed otherwise, 1 min/lap)? Yes...</p><pre class="codeinput">power_max = torque_max * 2*pi/60 * RPM_min;
 
-power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max <span class="comment">%#ok</span>
+power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max;
 
 <span class="comment">% Accelerations &amp; Constant Speed</span>
 energy_reqd = (power_max * 2 * 6 + power_constant_speed * 60) * 20 * 0.0002777777778 <span class="comment">%#ok</span>
 </pre><pre class="codeoutput">
-power_constant_speed =
-
-       921.51
-
-
 energy_reqd =
 
         388.4
@@ -165,7 +160,7 @@ current_draw_constant =
 
        18.792
 
-</pre><p>By solving the cubic equation <img src="Case_Study_eq15674305631145146478.png" alt="$P = Fv = (av^2 + bv + c)v$" style="width:124px;height:12px;">, we were able to calculate a max speed of 15.7 mph at a 5% grade.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><p>By solving the cubic equation <img src="Case_Study_eq15674305631145146478.png" alt="$P = Fv = (av^2 + bv + c)v$" style="width:124px;height:12px;">, we were able to calculate a <b>max speed of 15.7 mph at a 5% grade</b>. <b>Power demand</b> on the hill would be <b>1218.81W,</b> the full power of the motor in the short term. <b>Current draw would be 33.6A</b> at this power draw.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% ENGS 85.07: Practical EV Engineering
 % *Electric Go-Kart Design Case Study*
@@ -238,11 +233,11 @@ Cap_battery_FOS=Cap_battery*3 %#ok
 % total)
 % 
 % Does battery fulfill course requirements (6 2-second accelerations for 20
-% laps with constant 25mph speed otherwise, 1 min/lap)
+% laps with constant 25mph speed otherwise, 1 min/lap)? Yes...
 
 power_max = torque_max * 2*pi/60 * RPM_min;
 
-power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max %#ok
+power_constant_speed = F_road * wheel_radius * 0.0254 / gear_ratio * (2*pi/60) * RPM_max;
 
 % Accelerations & Constant Speed
 energy_reqd = (power_max * 2 * 6 + power_constant_speed * 60) * 20 * 0.0002777777778 %#ok
@@ -268,7 +263,9 @@ grade_speed_no_drag = (v_motor - ((F_roll+grade_load)*wheel_radius*0.0254/gear_r
 
 %% 
 % By solving the cubic equation $P = Fv = (av^2 + bv + c)v$, we were able
-% to calculate a max speed of 15.7 mph at a 5% grade.
+% to calculate a *max speed of 15.7 mph at a 5% grade*. *Power demand* on the
+% hill would be *1218.81W,* the full power of the motor in the short term.
+% *Current draw would be 33.6A* at this power draw.
 
 
 ##### SOURCE END #####
